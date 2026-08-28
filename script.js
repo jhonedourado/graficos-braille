@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.title = `Guia em Áudio - ${informacoesAudio.titulo}`;
 
                 // Monta link do Drive usando o ID
-                const linkAudio = `./audio/${informacoesAudio.audio_id}.mpeg`;
+                const linkAudio = `./audio/${id}.mpeg`;
                 fonte.src = linkAudio;
                 audio.load();
 
