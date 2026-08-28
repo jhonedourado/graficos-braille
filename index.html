@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acessibilidade - Guia de Áudio</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="./script.js"></script>
+</head>
+<body>
+
+<!--
+    role: serve para definir a função exata de um elemento na página para tecnologias assistivas, como os leitores de tela.
+    role="main": aponta para o conteúdo principal da página.
+-->
+<div class="container" role="main">
+    <h1 id="titulo-pagina">Carregando...</h1>
+    <p class="status" id="status-audio">Buscando informações do ambiente...</p>
+    
+    <audio id="audio" controls>
+        <source id="fonte-audio" src="" type="audio/mpeg">
+        Seu navegador não suporta a reprodução de áudio.
+    </audio>
+
+    <!--Para teste no ambiente de desenvolvimento-->
+    <!--<a href="index.html?id=assintotas">Mudar URL</a>-->
+</div>
+
+</body>
+</html>
