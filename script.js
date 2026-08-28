@@ -25,8 +25,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 document.title = `Guia em Áudio - ${informacoesAudio.titulo}`;
 
                 // Monta link do Drive usando o ID
-                const linkDrive = `https://drive.google.com/uc?export=open&id=${informacoesAudio.audio_id}`;
-                fonte.src = linkDrive;
+                const linkAudio = `./audio/${informacoesAudio.audio_id}.mpeg`;
+                fonte.src = linkAudio;
                 audio.load();
 
                 // Gerencia o Autoplay
