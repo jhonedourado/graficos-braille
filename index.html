@@ -14,11 +14,7 @@
 </head>
 <body>
 
-<!--
-    role: serve para definir a função exata de um elemento na página para tecnologias assistivas, como os leitores de tela.
-    role="main": aponta para o conteúdo principal da página.
--->
-<div class="container" role="main">
+<div class="container">
     <h1 id="titulo-pagina">Carregando...</h1>
     <p class="status" id="status-audio">Buscando informações do ambiente...</p>
     
@@ -27,8 +23,24 @@
         Seu navegador não suporta a reprodução de áudio.
     </audio>
 
-    <!--Para teste no ambiente de desenvolvimento-->
-    <!--<a href="index.html?id=assintotas">Mudar URL</a>-->
+    <!-- Para teste no ambiente de desenvolvimento -->
+    <!-- <a href="index.html?id=assintotas">Mudar URL</a> -->
+
+    <section class="chat-container" aria-label="Assistente de Dúvidas sobre o Gráfico">
+        <h2 class="leitor">Tirar dúvidas por áudio</h2>
+        
+        <div id="historico-chat" class="historico-chat" role="log" aria-live="polite" aria-relevant="additions">
+            <!-- Mensagens do chat serão inseridas aqui -->
+        </div>
+
+        <div class="chat-controles">
+            <button id="btn-gravacao" class="btn-audio" aria-label="Gravar pergunta em áudio">
+                Gravar pergunta ao assistente
+            </button>
+            <!-- Região que lê o estado da gravação para o leitor de tela sem interromper o usuário -->
+            <span id="status-gravacao" class="leitor" aria-live="assertive"></span>
+        </div>
+    </section>
 </div>
 
 </body>

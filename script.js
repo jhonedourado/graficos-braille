@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const statusAudio = document.getElementById('status-audio');
     const audio = document.getElementById('audio');
     const fonte = document.getElementById('fonte-audio');
+    const btnGravacao = document.getElementById('btn-gravacao');
 
     // Pega o ID na URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -24,7 +25,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 tituloPagina.textContent = informacoesAudio.titulo;
                 document.title = `Guia em Áudio - ${informacoesAudio.titulo}`;
 
-                // Monta link do Drive usando o ID
                 const linkAudio = `./audio/${id}.mpeg`;
                 fonte.src = linkAudio;
                 audio.load();
@@ -46,6 +46,21 @@ window.addEventListener('DOMContentLoaded', () => {
             tituloPagina.textContent = "Erro de Conexão";
             statusAudio.textContent = "Não foi possível carregar as informações do servidor.";
         });
+    
+    btnGravacao.addEventListener('click', async function iniciarFluxoGravação() {
+        try {
+            // Dispara a gravação e aguarda a string Base64
+            const audioBase64 = await recordAudio();
+
+            console.log("Áudio em Base64 pronto para envio:", audioBase64);
+
+            // Envia 'audioBase64' para a API do chatbot
+            enviarParaBackend(audioBase64);
+
+        } catch (erro) {
+            console.error("Erro durante a gravação:", erro);
+        }
+    });
 });
 
 function criarCamadaToqueTelaInteira(audio, statusAudio) {
@@ -66,4 +81,83 @@ function criarCamadaToqueTelaInteira(audio, statusAudio) {
     });
     
     document.body.appendChild(telaInterativa);
+}
+
+// Captura o áudio do usuário, atualiza a interface de forma acessível e retorna uma Promise que resolve para a string Base64 do áudio
+async function recordAudio() {
+    const btnGravacao = document.getElementById('btn-gravacao');
+    const statusGravacao = document.getElementById('status-gravacao');
+
+    // Verifica suporte ao microfone
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        statusGravacao.textContent = "Seu navegador não suporta gravação de áudio.";
+        throw new Error("API MediaDevices não suportada.");
+    }
+
+    // Solicita acesso ao microfone
+    let stream;
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+        statusGravacao.textContent = "Permissão de microfone negada ou não encontrada.";
+        throw err;
+    }
+
+    const mediaRecorder = new MediaRecorder(stream);
+    let chunks = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    // Promise que será resolvida quando o usuário clicar em "Parar"
+    const recordingPromise = new Promise((resolve) => {
+        mediaRecorder.onstop = () => {
+            // Desliga o indicador do microfone no hardware/navegador
+            stream.getTracks().forEach(track => track.stop());
+
+            // Cria o Blob no tipo nativo gravado
+            const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+            
+            // Converte para Base64
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                // Retorna apenas a string Base64 (sem o cabeçalho data:audio/...;base64,)
+                const base64Data = reader.result.split(',')[1];
+                resolve(base64Data);
+            };
+        };
+    });
+
+    // Inicia a gravação imediatamente
+    mediaRecorder.start();
+
+    // Atualiza estados visuais e acessíveis
+    btnGravacao.classList.add('gravando');
+    btnGravacao.setAttribute('aria-label', 'Parar gravação e enviar pergunta');
+    btnGravacao.textContent = 'Parar Gravação';
+    statusGravacao.textContent = 'Gravação iniciada. Fale sua pergunta e clique em Parar Gravação quando terminar.';
+
+    // Gerencia o clique de parada
+    btnGravacao.onclick = () => {
+        if (mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+
+            // Restaura o estado inicial do botão
+            btnGravacao.classList.remove('gravando');
+            btnGravacao.setAttribute('aria-label', 'Gravar pergunta em áudio');
+            btnGravacao.textContent = 'Gravar pergunta ao assistente';
+            statusGravacao.textContent = 'Gravação finalizada. Enviando áudio...';
+            
+            // Remove o evento para evitar múltiplos listeners em futuras chamadas
+            btnGravacao.onclick = null;
+        }
+    };
+
+    return recordingPromise;
+}
+
+async function enviarParaBackend(audioBase64) {
+    //
 }
