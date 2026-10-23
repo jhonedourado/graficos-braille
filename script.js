@@ -1,11 +1,45 @@
+// Configurações globais de conexão
+const urlServidor = "wss://graficos-braille.onrender.com/ws";
+const urlAudioBase = "https://graficos-braille.onrender.com/respostas/";
+let ws;
+
 window.addEventListener('DOMContentLoaded', () => {
     const tituloPagina = document.getElementById('titulo-pagina');
     const statusAudio = document.getElementById('status-audio');
     const audio = document.getElementById('audio');
     const fonte = document.getElementById('fonte-audio');
     const btnGravacao = document.getElementById('btn-gravacao');
+    const statusGravacao = document.getElementById('status-gravacao');
 
-    // Pega o ID na URL
+    // Inicializa a conexão com o Render
+    ws = new WebSocket(urlServidor);
+
+    ws.onopen = () => {
+        console.log("Conectado ao back-end no Render com sucesso!");
+    };
+
+    ws.onmessage = (event) => {
+        const respostaAudio = event.data;
+        console.log("Resposta recebida da IA:", respostaAudio);
+        
+        if (statusGravacao) {
+            statusGravacao.textContent = "Resposta recebida. Reproduzindo...";
+        }
+        
+        // Toca o áudio enviado pelo servidor
+        const audioAssistente = new Audio(urlAudioBase + respostaAudio);
+        audioAssistente.play();
+    };
+
+    ws.onerror = (error) => {
+        console.error("Erro na conexão WebSocket:", error);
+    };
+
+    ws.onclose = () => {
+        console.log("Conexão WebSocket encerrada.");
+    };
+
+    // Pega o ID na URL para o áudio descritivo do ambiente
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
 
@@ -15,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Busca o título e o áudio
+    // Busca o título e o áudio no banco de dados local
     fetch('db.json')
         .then(response => response.json())
         .then(dados => {
@@ -47,16 +81,14 @@ window.addEventListener('DOMContentLoaded', () => {
             statusAudio.textContent = "Não foi possível carregar as informações do servidor.";
         });
     
-    btnGravacao.addEventListener('click', async function iniciarFluxoGravação() {
+    // Dispara a lógica de gravação para a IA
+    btnGravacao.addEventListener('click', async function iniciarFluxoGravacao() {
         try {
-            // Dispara a gravação e aguarda a string Base64
-            const audioBase64 = await recordAudio();
+            // Aguarda a gravação terminar e devolve o arquivo em bytes puros
+            const audioBlob = await recordAudio();
+            console.log("Áudio pronto para envio:", audioBlob);
 
-            console.log("Áudio em Base64 pronto para envio:", audioBase64);
-
-            // Envia 'audioBase64' para a API do chatbot
-            enviarParaBackend(audioBase64);
-
+            enviarParaBackend(audioBlob);
         } catch (erro) {
             console.error("Erro durante a gravação:", erro);
         }
@@ -83,18 +115,16 @@ function criarCamadaToqueTelaInteira(audio, statusAudio) {
     document.body.appendChild(telaInterativa);
 }
 
-// Captura o áudio do usuário, atualiza a interface de forma acessível e retorna uma Promise que resolve para a string Base64 do áudio
+// Captura o microfone e devolve um Blob (bytes do áudio)
 async function recordAudio() {
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
 
-    // Verifica suporte ao microfone
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         statusGravacao.textContent = "Seu navegador não suporta gravação de áudio.";
         throw new Error("API MediaDevices não suportada.");
     }
 
-    // Solicita acesso ao microfone
     let stream;
     try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -110,47 +140,30 @@ async function recordAudio() {
         if (e.data.size > 0) chunks.push(e.data);
     };
 
-    // Promise que será resolvida quando o usuário clicar em "Parar"
     const recordingPromise = new Promise((resolve) => {
         mediaRecorder.onstop = () => {
-            // Desliga o indicador do microfone no hardware/navegador
             stream.getTracks().forEach(track => track.stop());
-
-            // Cria o Blob no tipo nativo gravado
             const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-            
-            // Converte para Base64
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                // Retorna apenas a string Base64 (sem o cabeçalho data:audio/...;base64,)
-                const base64Data = reader.result.split(',')[1];
-                resolve(base64Data);
-            };
+            resolve(blob); 
         };
     });
 
-    // Inicia a gravação imediatamente
     mediaRecorder.start();
 
-    // Atualiza estados visuais e acessíveis
     btnGravacao.classList.add('gravando');
     btnGravacao.setAttribute('aria-label', 'Parar gravação e enviar pergunta');
     btnGravacao.textContent = 'Parar Gravação';
     statusGravacao.textContent = 'Gravação iniciada. Fale sua pergunta e clique em Parar Gravação quando terminar.';
 
-    // Gerencia o clique de parada
     btnGravacao.onclick = () => {
         if (mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
 
-            // Restaura o estado inicial do botão
             btnGravacao.classList.remove('gravando');
             btnGravacao.setAttribute('aria-label', 'Gravar pergunta em áudio');
             btnGravacao.textContent = 'Gravar pergunta ao assistente';
             statusGravacao.textContent = 'Gravação finalizada. Enviando áudio...';
             
-            // Remove o evento para evitar múltiplos listeners em futuras chamadas
             btnGravacao.onclick = null;
         }
     };
@@ -158,6 +171,16 @@ async function recordAudio() {
     return recordingPromise;
 }
 
-async function enviarParaBackend(audioBase64) {
-    //
+function enviarParaBackend(audioBlob) {
+    const statusGravacao = document.getElementById('status-gravacao');
+    
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(audioBlob); 
+        console.log("Áudio enviado com sucesso para o servidor.");
+    } else {
+        if (statusGravacao) {
+            statusGravacao.textContent = "Erro: O servidor ainda não está conectado. Tente novamente.";
+        }
+        console.warn("Aguarde. O servidor ainda está conectando...");
+    }
 }

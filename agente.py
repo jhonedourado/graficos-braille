@@ -7,8 +7,8 @@ import speech_recognition as sr
 import io
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_classic.chains import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
@@ -25,8 +25,8 @@ class Agente:
         os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
 
         # 2. Inicializando o LLM e o Modelo de Embeddings
-        # Usamos o modelo open-source all-MiniLM (leve e rápido) para gerar os vetores
-        modelo_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        # Usamos o modelo dos servidores da Google para gerar os vetores
+        modelo_embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
         llm = ChatGoogleGenerativeAI(model="gemini-3.6-flash",
                                     temperature=0.2,
                                     max_retries=1)
@@ -188,3 +188,6 @@ class Agente:
 
         except Exception as e:
             return f'Erro ao processar o RAG: {e}.'
+
+agente = Agente()
+agente.estruturar_agente()
