@@ -1,6 +1,6 @@
 // Configurações globais de conexão
 const urlServidor = "wss://graficos-braille.onrender.com/ws";
-const urlAudioBase = "https://graficos-braille.onrender.com/";
+const urlAudioBase = "https://graficos-braille.onrender.com";
 let ws;
 
 window.addEventListener('DOMContentLoaded', () => {
