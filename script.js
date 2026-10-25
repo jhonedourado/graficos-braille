@@ -1,5 +1,12 @@
-// Configurações globais de conexão
-const urlServidor = "wss://graficos-braille.onrender.com/ws";
+// Configurações globais de conexão baseadas no QR Code (?id=...)
+const urlParams = new URLSearchParams(window.location.search);
+const topic = urlParams.get('id');
+
+// Se houver um ID, conecta na rota específica do tópico. Se não, vai para o chat geral.
+const urlServidor = topic 
+    ? `wss://graficos-braille.onrender.com/ws/${topic}` 
+    : "wss://graficos-braille.onrender.com/ws";
+
 const urlAudioBase = "https://graficos-braille.onrender.com";
 let ws;
 
@@ -11,11 +18,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
 
-    // Inicializa a conexão com o Render
+    // Inicializa a conexão com o Render enviando o tópico correspondente
     ws = new WebSocket(urlServidor);
 
     ws.onopen = () => {
-        console.log("Conectado ao back-end no Render com sucesso!");
+        console.log(`Conectado ao back-end no Render com sucesso! Tópico: ${topic || 'geral'}`);
     };
 
     ws.onmessage = (event) => {
@@ -26,9 +33,20 @@ window.addEventListener('DOMContentLoaded', () => {
             statusGravacao.textContent = "Resposta recebida. Reproduzindo...";
         }
         
+        // Garante que não haja barras duplas na união do domínio com a rota do servidor
+        let caminhoLimpo = respostaAudio;
+        if (caminhoLimpo.startsWith("/")) {
+            caminhoLimpo = caminhoLimpo.substring(1);
+        }
+
+        const urlAudioFinal = `${urlAudioBase}/${caminhoLimpo}`;
+        console.log("Tentando reproduzir áudio em:", urlAudioFinal);
+
         // Toca o áudio enviado pelo servidor
-        const audioAssistente = new Audio(urlAudioBase + respostaAudio);
-        audioAssistente.play();
+        const audioAssistente = new Audio(urlAudioFinal);
+        audioAssistente.play().catch(error => {
+            console.error("Erro ao reproduzir áudio:", error);
+        });
     };
 
     ws.onerror = (error) => {
@@ -40,8 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     // Pega o ID na URL para o áudio descritivo do ambiente
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+    const id = topic;
 
     if (!id) {
         tituloPagina.textContent = "Erro de Identificação";

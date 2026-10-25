@@ -1,0 +1,132 @@
+{
+    "metadados": {
+        "titulo": "Notas de Aula de Cálculo A: Funções com Limites Assintóticos",
+        "autor": "Louis Augusto Gonçalves (IFSC, DALTEC)",
+        "instituicao": "Instituto Federal de Santa Catarina (IFSC) - Campus São José",
+        "semestre": "Sem 2024-2"
+    },
+    "conteudo_completo": [
+        {
+            "secao": "Limites nos infinitos",
+            "pagina": 4,
+            "teoria_texto": "Considere a função f(x) = 1/(x-1)^2 para todo x real, com x diferente de 1. A função não pode ser dividida por zero, por isso x diferente de 1, podemos estudar o comportamento da função nas proximidades de 1.",
+            "equacoes_latex": [
+                "$$f(x)=\\frac{1}{(x-1)^{2}}$$"
+            ],
+            "exemplo_computacional_maxima": {
+                "codigo": "f(x):=1/(x-1)^2\nfor i:0 thru 4 do (display(f(1+10^(-i))))\nfor i:0 thru 4 do (display(f(1-10^(-i))))",
+                "observacao": "Os testes de limite mostram a função tendendo a valores muito altos (ex: f(1.0001) = 1.0000000000022 * 10^8) quando x se aproxima de 1."
+            }
+        },
+        {
+            "secao": "Singularidades",
+            "pagina": 5,
+            "teoria_texto": "A função f(x) = 1/(x-1)^2 tem uma divisão por zero em x=1, o que forma uma singularidade, criando uma assíntota vertical em x=1. Toda vez que temos uma divisão por zero numa função teremos um ponto não definido e a formação de uma singularidade, o que pode gerar uma assíntota vertical ou um comportamento mal definido como em f(x) = sen(1/x).",
+            "equacoes_latex": [
+                "$$f(x)=\\frac{1}{(x-1)^{2}}$$",
+                "$$f(x)=sen(\\frac{1}{x})$$"
+            ]
+        },
+        {
+            "secao": "Vizinhança de uma singularidade",
+            "pagina": 6,
+            "teoria_texto": "Nosso interesse está nas singularidades que possuem assíntotas verticais, e para isto estudamos a vizinhança de uma singularidade, verificando se há comportamento assintótico ou não, como feito para a função f(x) = 1/(x-1)^2. Da mesma forma que uma função pode aumentar o seu valor indefinidamente quando se aproxima de uma singularidade, outras podem diminuir de forma ilimitada seu valor. Observe a função f(x) = -1/(x-1)^2, onde o limite tende a menos infinito.",
+            "equacoes_latex": [
+                "$$f(x)=-\\frac{1}{(x-1)^{2}}$$",
+                "$$lim_{x\\rightarrow 1}-\\frac{1}{(x-1)^{2}}=-\\infty$$"
+            ]
+        },
+        {
+            "secao": "Vizinhança lateral de uma singularidade",
+            "pagina": 7,
+            "teoria_texto": "Nem sempre uma função possui os limites laterais coincidentes na vizinhança de uma singularidade. Observe o gráfico da função f(x) = 1/(x-1). Observe que se x assume valores próximos de 1, menores que 1, os valores da função decrescem ilimitadamente; e se x assume valores próximos de 1 e maiores que 1, os valores da função crescem ilimitadamente. Neste caso os limites laterais são infinitos. Veja que não existe limite de f(x) tendendo a 1 neste caso, pois os limites laterais diferem.",
+            "equacoes_latex": [
+                "$$f(x)=\\frac{1}{x-1}$$",
+                "$$lim_{x\\rightarrow 1^{-}}\\frac{1}{x-1}=-\\infty$$",
+                "$$lim_{x\\rightarrow 1^{+}}\\frac{1}{x-1}=\\infty$$",
+                "$$\\nexists lim_{x\\rightarrow 1}\\frac{1}{x-1}$$"
+            ]
+        },
+        {
+            "secao": "Propriedades dos Limites Infinitos",
+            "pagina": 8,
+            "teoria_texto": "Tabela de conclusões e propriedades para os limites infinitos quando x tende a 'a'.",
+            "equacoes_latex": [
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ e $$lim_{x\\rightarrow a}g(x)=+\\infty$$, então $$lim_{x\\rightarrow a}(f+g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=-\\infty$$ e $$lim_{x\\rightarrow a}g(x)=-\\infty$$, então $$lim_{x\\rightarrow a}(f+g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ e $$lim_{x\\rightarrow a}g(x)=b>0$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ e $$lim_{x\\rightarrow a}g(x)=b<0$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=-\\infty$$ e $$lim_{x\\rightarrow a}g(x)=b>0$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=-\\infty$$ e $$lim_{x\\rightarrow a}g(x)=b<0$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ e $$lim_{x\\rightarrow a}g(x)=+\\infty$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ e $$lim_{x\\rightarrow a}g(x)=-\\infty$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=-\\infty$$ e $$lim_{x\\rightarrow a}g(x)=-\\infty$$, então $$lim_{x\\rightarrow a}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=+\\infty$$ ou $$-\\infty$$, então $$lim_{x\\rightarrow a}\\frac{1}{f(x)}=0$$",
+                "Se $$lim_{x\\rightarrow a}f(x)=0$$, então $$lim_{x\\rightarrow a}\\left|\\frac{1}{f(x)}\\right|=+\\infty$$"
+            ]
+        },
+        {
+            "secao": "Limites Infinitos (x tendendo ao infinito)",
+            "pagina": "10-11",
+            "teoria_texto": "Considere a função f(x) = (x-2)/x para x real não nulo. Deve-se observar que, conforme x aumenta indefinidamente (x -> infinito), o valor de y começa a cada vez mais se aproximar de y=1. O significado de x -> infinito não é de ser x um número muito grande, e sim um valor que aumenta indefinidamente. Não importa imaginar um número N tão grande quanto se queira, x -> infinito significa que x uma hora será maior do que N. Graficamente, quando x aumenta indefinidamente, o valor de y se aproxima da reta horizontal y=1 (assíntota horizontal).",
+            "equacoes_latex": [
+                "$$f(x)=\\frac{x-2}{x}$$",
+                "$$lim_{x\\rightarrow\\infty}\\frac{x-2}{x}=1$$",
+                "$$lim_{x\\rightarrow-\\infty}\\frac{x-2}{x}=1$$"
+            ],
+            "exemplo_computacional_maxima": {
+                "codigo": "f(x):=(x-2)/x\nnumer:true\nfor i:0 thru 5 do(display(f(10^i)))"
+            }
+        },
+        {
+            "secao": "Limites Infinitos (Oscilação e Divergência)",
+            "pagina": "12-13",
+            "teoria_texto": "A função pode convergir para um valor y fixo quando x cresce ou decresce indefinidamente de forma suave ou oscilando como no exemplo da função amortecida. Temos no gráfico as funções y = +-e^(-0.2x) que limitam superiormente e inferiormente a função f(x) = e^(-0.2x)sen(x). Obviamente, nem todas as funções convergem para um número L quando x cresce ou decresce indefinidamente; em alguns casos o valor de y pode crescer/decrescer indefinidamente ou ficar oscilando em um intervalo, como f(x) = cos(x). Em ambos os casos dizemos que a função diverge quando x tende a mais ou menos infinito.",
+            "equacoes_latex": [
+                "$$f(x)=e^{-0,2x}sen(x)$$",
+                "$$y=\\pm e^{-0,2x}$$",
+                "$$f(x)=cos(x)$$"
+            ]
+        },
+        {
+            "secao": "Teoremas dos limites infinitos",
+            "pagina": 14,
+            "teoria_texto": "Temos dois teoremas fundamentais para resolver limites infinitos, que vão ser deixados sem demonstração: Teorema da divergência e Teorema da convergência.",
+            "equacoes_latex": [
+                "Teorema da divergência: Se n é um número inteiro positivo, então $$lim_{x\\rightarrow\\infty}x^{n}=\\infty$$",
+                "Teorema da divergência: Se n é par, então $$lim_{x\\rightarrow-\\infty}x^{n}=\\infty$$",
+                "Teorema da divergência: Se n é ímpar, então $$lim_{x\\rightarrow-\\infty}x^{n}=-\\infty$$",
+                "Teorema da convergência: Se n é um número inteiro positivo, então $$lim_{x\\rightarrow\\infty}\\frac{1}{x^{n}}=0$$ e $$lim_{x\\rightarrow-\\infty}\\frac{1}{x^{n}}=0$$"
+            ]
+        },
+        {
+            "secao": "Indeterminações",
+            "pagina": "15-16",
+            "teoria_texto": "Da seção anterior temos lim(1/x^n) = 0. De maneira informal, escrevemos 1/(+-infinito) = 0. Com isto em mente, considerando apenas valores positivos, a forma 0/0 equivale a (1/infinito) / (1/infinito) = infinito/infinito. Isto leva a uma equivalência entre 0/0 e infinito/infinito, ou seja, é uma forma indeterminada, mas que não é difícil de ser removida aplicando os teoremas. Da mesma forma que 0/0 pode assumir qualquer valor, o mesmo acontece com (infinito - infinito), que pode resultar num número, numa tendência ilimitada de crescimento ou decrescimento. Em geral, a partir de operações algébricas, é possível transformar (infinito - infinito) em (infinito / infinito).",
+            "equacoes_latex": [
+                "$$\\frac{\\infty}{\\infty}$$",
+                "$$\\frac{0}{0}$$",
+                "$$\\infty-\\infty$$",
+                "$$\\frac{\\frac{1}{\\infty}}{\\frac{1}{\\infty}}=\\frac{\\infty}{\\infty}$$"
+            ]
+        },
+        {
+            "secao": "Propriedades dos limites nos infinitos",
+            "pagina": 17,
+            "teoria_texto": "Tabela de proposições para limites quando x tende ao infinito. As proposições continuam verdadeiras se trocarmos x -> +infinito por x -> -infinito.",
+            "equacoes_latex": [
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=+\\infty$$, então $$lim_{x\\rightarrow+\\infty}(f+g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=-\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=-\\infty$$, então $$lim_{x\\rightarrow+\\infty}(f+g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=b>0$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=b<0$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=-\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=b>0$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=-\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=b<0$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=+\\infty$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=-\\infty$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=-\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=-\\infty$$ e $$lim_{x\\rightarrow+\\infty}g(x)=-\\infty$$, então $$lim_{x\\rightarrow+\\infty}(f \\cdot g)(x)=+\\infty$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=+\\infty$$ ou $$-\\infty$$, então $$lim_{x\\rightarrow+\\infty}\\frac{1}{f(x)}=0$$",
+                "Se $$lim_{x\\rightarrow+\\infty}f(x)=0$$, então $$lim_{x\\rightarrow+\\infty}\\left|\\frac{1}{f(x)}\\right|=+\\infty$$"
+            ]
+        }
+    ]
+}

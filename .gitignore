@@ -1,3 +1,9 @@
 venv/
 .env
-limites_assintoticos_completo.json
+chroma_db/
+respostas/
+chroma_db/
+respostas/
+venv/
+.env
+__pycache__/
