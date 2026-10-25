@@ -58,45 +58,19 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     // Pega o ID na URL para o áudio descritivo do ambiente
+    // Pega o ID na URL (ex: ?id=assintotas)
     const id = topic;
 
     if (!id) {
-        tituloPagina.textContent = "Erro de Identificação";
-        statusAudio.textContent = "Nenhum local foi especificado na URL do QR Code.";
-        return;
+        tituloPagina.textContent = "Tutor de Cálculo - IA";
+        statusAudio.textContent = "Conectado ao assistente de voz.";
+    } else {
+        // Formata o título com base no ID (ex: 'assintotas' vira 'Assíntotas')
+        const tituloFormatado = id.charAt(0).toUpperCase() + id.slice(1);
+        tituloPagina.textContent = tituloFormatado;
+        document.title = `Tutor de Cálculo - ${tituloFormatado}`;
+        statusAudio.textContent = "Áudio descritivo pronto. Faça sua pergunta à IA abaixo.";
     }
-
-    // Busca o título e o áudio no banco de dados local
-    fetch('db.json')
-        .then(response => response.json())
-        .then(dados => {
-            const informacoesAudio = dados[id];
-
-            if (informacoesAudio) {
-                tituloPagina.textContent = informacoesAudio.titulo;
-                document.title = `Guia em Áudio - ${informacoesAudio.titulo}`;
-
-                const linkAudio = `./audio/${id}.mpeg`;
-                fonte.src = linkAudio;
-                audio.load();
-
-                // Gerencia o Autoplay
-                audio.play().then(() => {
-                    statusAudio.textContent = "Áudio iniciado automaticamente.";
-                }).catch(error => {
-                    statusAudio.textContent = "Toque em qualquer lugar da tela para iniciar a audiodescrição.";
-                    criarCamadaToqueTelaInteira(audio, statusAudio);
-                });
-
-            } else {
-                tituloPagina.textContent = "Local não encontrado";
-                statusAudio.textContent = "O código escaneado não existe no banco de dados.";
-            }
-        })
-        .catch(erro => {
-            tituloPagina.textContent = "Erro de Conexão";
-            statusAudio.textContent = "Não foi possível carregar as informações do servidor.";
-        });
     
     // Dispara a lógica de gravação para a IA
     btnGravacao.addEventListener('click', async function iniciarFluxoGravacao() {
