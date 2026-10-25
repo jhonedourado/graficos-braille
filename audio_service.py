@@ -4,8 +4,13 @@ import re
 import time
 import uuid
 import speech_recognition as sr
-from gtts import gTTS
+from elevenlabs.client import ElevenLabs
+from elevenlabs import VoiceSettings
 from pydub import AudioSegment
+from dotenv import load_dotenv
+
+# Carrega as variáveis do arquivo .env
+load_dotenv()
 
 
 class AudioService:
@@ -13,8 +18,13 @@ class AudioService:
     def __init__(self, output_dir: str = "./respostas"):
         self.output_dir = output_dir
         self.recognizer = sr.Recognizer()
+        
         # Garante que a pasta ./respostas exista no Render
         os.makedirs(self.output_dir, exist_ok=True)
+
+        # Configuração de voz
+        self.voice_engine = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+        self.voice_id = "JBFqnCBsd6RMkjVDRZzb" #ID da voz escolhida no painel do ElevenLabs (George - tom calmo e didático)
 
     def speech_to_text(self, audio_bytes: bytes) -> str:
         """
@@ -92,9 +102,25 @@ class AudioService:
         filename = f"resposta_agente_{int(time.time())}_{uuid.uuid4().hex[:4]}.mp3"
         file_path = os.path.join(self.output_dir, filename)
 
-        # Motor de geração (no futuro, basta trocar estas 2 linhas pelo SDK do ElevenLabs, por exemplo)
-        tts = gTTS(text=cleaned_text, lang="pt", tld="com.br")
-        tts.save(file_path)
+        # Motor de geração (gera o fluxo de áudio com ajuste de entonação)
+        audio_generator = self.voice_engine.text_to_speech.convert(
+            voice_id=self.voice_id,
+            output_format="mp3_44100_128",
+            text=cleaned_text,
+            model_id="eleven_multilingual_v2",
+            voice_settings=VoiceSettings(
+                stability=0.5,          # Equilíbrio entre consistência e expressividade (0.0 a 1.0)
+                similarity_boost=0.75,  # Fidelidade ao timbre original da voz (0.0 a 1.0)
+                style=0.0,              # Exagero de estilo (manter em 0 deixa mais estável e rápido)
+                use_speaker_boost=True  # Melhora a nitidez da voz
+            )
+        )
+
+        # Salva os pacotes de bytes gerados no arquivo MP3
+        with open(file_path, "wb") as f:
+            for chunk in audio_generator:
+                if chunk:
+                    f.write(chunk)
 
         # Retorna a rota exata que o front-end espera concatenar com urlAudioBase
         return f"/respostas/{filename}"
