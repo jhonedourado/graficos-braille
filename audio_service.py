@@ -5,13 +5,7 @@ import time
 import uuid
 import speech_recognition as sr
 import edge_tts
-#from elevenlabs.client import ElevenLabs
-#from elevenlabs import VoiceSettings
 from pydub import AudioSegment
-from dotenv import load_dotenv
-
-# Carrega as variáveis do arquivo .env
-load_dotenv()
 
 
 class AudioService:
@@ -24,9 +18,7 @@ class AudioService:
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Configuração de voz
-        #self.voice_engine = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
-        #self.voice_id = "JBFqnCBsd6RMkjVDRZzb" #ID da voz escolhida no painel do ElevenLabs (George - tom calmo e didático)
-        self.voice = "pt-BR-AntonioNeural"
+        self.voice = "pt-BR-AntonioNeural" #existem outras vozes do Microsoft Edge
 
     def speech_to_text(self, audio_bytes: bytes) -> str:
         """
@@ -106,26 +98,6 @@ class AudioService:
         # Usa timestamp + sufixo único curto para evitar colisão de nomes
         filename = f"resposta_agente_{int(time.time())}_{uuid.uuid4().hex[:4]}.mp3"
         file_path = os.path.join(self.output_dir, filename)
-
-        # Motor de geração (gera o fluxo de áudio com ajuste de entonação)
-        #audio_generator = self.voice_engine.text_to_speech.convert(
-        #    voice_id=self.voice_id,
-        #    output_format="mp3_44100_128",
-        #    text=cleaned_text,
-        #    model_id="eleven_flash_v2_5",
-        #    voice_settings=VoiceSettings(
-        #        stability=0.5,          # Equilíbrio entre consistência e expressividade (0.0 a 1.0)
-        #        similarity_boost=0.75,  # Fidelidade ao timbre original da voz (0.0 a 1.0)
-        #        style=0.0,              # Exagero de estilo (manter em 0 deixa mais estável e rápido)
-        #        use_speaker_boost=True  # Melhora a nitidez da voz
-        #    )
-        #)
-
-        # Salva os pacotes de bytes gerados no arquivo MP3
-        #with open(file_path, "wb") as f:
-        #    for chunk in audio_generator:
-        #        if chunk:
-        #            f.write(chunk)
 
         # Motor de Geração (gera o fluxo de áudio)
         # parâmtro rate pode ser usado para aumentar ou diminuir a velocidade da leitura
