@@ -38,6 +38,7 @@ class Agent:
             "e prefira escrever as expressões matemáticas por extenso sempre que possível.\n"
             "Se o conceito matemático necessário para resolver a dúvida não estiver no contexto, "
             "diga educadamente que não possui essa informação no material atual.\n\n"
+            "IMPORTANTE: Como sua resposta será convertida em áudio de voz em tempo real, seja direto, didático e conciso. Responda em um único parágrafo de no máximo 3 a 4 frases curtas (cerca de 400 caracteres)."
             "Contexto Teórico:\n{context}"
         )
 
