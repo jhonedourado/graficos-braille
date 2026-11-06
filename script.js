@@ -17,7 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const fonte = document.getElementById('fonte-audio');
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
-
+    
+    let audioAssistente = null;
     let isRecording = false;
     let mediaRecorder = null;
     let audioChunks = [];
