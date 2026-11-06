@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
     
+    // Variáveis de escopo da página
     let audioAssistente = null;
     let isRecording = false;
     let mediaRecorder = null;
@@ -53,8 +54,8 @@ window.addEventListener('DOMContentLoaded', () => {
         const urlAudioFinal = `${urlAudioBase}/${caminhoLimpo}`;
         console.log("Tentando reproduzir áudio em:", urlAudioFinal);
 
-        // Toca o áudio enviado pelo servidor
-        const audioAssistente = new Audio(urlAudioFinal);
+        // CORREÇÃO: Sem o 'const' aqui! Usa a variável declarada lá em cima.
+        audioAssistente = new Audio(urlAudioFinal);
         audioAssistente.play().catch(error => {
             console.error("Erro ao reproduzir áudio:", error);
         });
@@ -69,7 +70,6 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     // Pega o ID na URL para o áudio descritivo do ambiente
-    // Pega o ID na URL (ex: ?id=assintotas)
     const id = topic;
 
     if (!id) {
@@ -83,6 +83,7 @@ window.addEventListener('DOMContentLoaded', () => {
         statusAudio.textContent = "Áudio descritivo pronto. Faça sua pergunta à IA abaixo.";
     }
 
+    // LÓGICA DE GRAVAÇÃO (Centralizada diretamente no botão)
     btnGravacao.addEventListener('click', async () => {
         // 1. SE JÁ ESTIVER GRAVANDO: O clique serve para PARAR
         if (isRecording) {
@@ -91,6 +92,7 @@ window.addEventListener('DOMContentLoaded', () => {
             // Reseta o visual do botão para o estado original
             btnGravacao.textContent = "Gravar Pergunta";
             btnGravacao.style.backgroundColor = ""; // Volta à cor padrão
+            btnGravacao.classList.remove('gravando');
             
             if (statusGravacao) statusGravacao.textContent = "Processando áudio...";
 
@@ -107,10 +109,11 @@ window.addEventListener('DOMContentLoaded', () => {
         // Altera o visual do botão para o usuário saber que está gravando
         btnGravacao.textContent = "Parar Gravação";
         btnGravacao.style.backgroundColor = "#d32f2f"; // Fica vermelho
+        btnGravacao.classList.add('gravando');
         
         if (statusGravacao) statusGravacao.textContent = "Gravando... Clique novamente para enviar.";
 
-        // Silencia a IA imediatamente (seu código original que estava certinho)
+        // Silencia a IA imediatamente se ela estiver falando
         if (audioAssistente && !audioAssistente.paused) {
             audioAssistente.pause();
         }
@@ -145,11 +148,12 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Erro ao acessar o microfone:", erro);
             isRecording = false;
             btnGravacao.textContent = "Gravar Pergunta";
+            btnGravacao.classList.remove('gravando');
             if (statusGravacao) statusGravacao.textContent = "Erro no microfone. Tente novamente.";
         }
     });
 
-    // Lógica do Pause e Reprodução de Áudio ao clicar
+    // Lógica do Pause e Reprodução de Áudio ao clicar na tela
     document.addEventListener('click', (event) => {
         // Se o usuário clicar no botão de gravar, ignora para não dar conflito
         if (event.target.id === 'btn-gravacao') return;
@@ -165,18 +169,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Lógica do Pause e Reprodução de Áudio pela barra de espaço
     document.addEventListener('keydown', (event) => {
-        if (event.code === 'Space' && event.target !== 'btn-gravacao'){
-            event.preventDefault();
+        // CORREÇÃO: check de id do botão e do audioAssistente
+        if (event.code === 'Space' && event.target.id !== 'btn-gravacao'){
+            event.preventDefault(); // Evita a tela rolar para baixo
 
-            if (audioAssistente.paused) {
-                audioAssistente.play();
-            } else {
-                audioAssistente.pause();
+            if (audioAssistente) {
+                if (audioAssistente.paused) {
+                    audioAssistente.play();
+                } else {
+                    audioAssistente.pause();
+                }
             }
         }
-    })
+    });
 });
 
+// Camada extra de acessibilidade para ambiente
 function criarCamadaToqueTelaInteira(audio, statusAudio) {
     const telaInterativa = document.createElement('div');
     telaInterativa.style.position = 'fixed';
@@ -197,62 +205,7 @@ function criarCamadaToqueTelaInteira(audio, statusAudio) {
     document.body.appendChild(telaInterativa);
 }
 
-// Captura o microfone e devolve um Blob (bytes do áudio)
-async function recordAudio() {
-    const btnGravacao = document.getElementById('btn-gravacao');
-    const statusGravacao = document.getElementById('status-gravacao');
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        statusGravacao.textContent = "Seu navegador não suporta gravação de áudio.";
-        throw new Error("API MediaDevices não suportada.");
-    }
-
-    let stream;
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-        statusGravacao.textContent = "Permissão de microfone negada ou não encontrada.";
-        throw err;
-    }
-
-    const mediaRecorder = new MediaRecorder(stream);
-    let chunks = [];
-
-    mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-    };
-
-    const recordingPromise = new Promise((resolve) => {
-        mediaRecorder.onstop = () => {
-            stream.getTracks().forEach(track => track.stop());
-            const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-            resolve(blob); 
-        };
-    });
-
-    mediaRecorder.start();
-
-    btnGravacao.classList.add('gravando');
-    btnGravacao.setAttribute('aria-label', 'Parar gravação e enviar pergunta');
-    btnGravacao.textContent = 'Parar Gravação';
-    statusGravacao.textContent = 'Gravação iniciada. Fale sua pergunta e clique em Parar Gravação quando terminar.';
-
-    btnGravacao.onclick = () => {
-        if (mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-
-            btnGravacao.classList.remove('gravando');
-            btnGravacao.setAttribute('aria-label', 'Gravar pergunta em áudio');
-            btnGravacao.textContent = 'Gravar pergunta ao assistente';
-            statusGravacao.textContent = 'Gravação finalizada. Enviando áudio...';
-            
-            btnGravacao.onclick = null;
-        }
-    };
-
-    return recordingPromise;
-}
-
+// Envia o Blob de áudio para o servidor FastAPI
 function enviarParaBackend(audioBlob) {
     const statusGravacao = document.getElementById('status-gravacao');
     
