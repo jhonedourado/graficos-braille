@@ -84,3 +84,35 @@ audio {
     background-color: #820000;
     transition: background-color 0.2s, transform 0.1s;
 }
+
+.esfera-ia {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    /* Gradiente com cores parecidas com a da sua referência */
+    background: radial-gradient(circle, #4facfe 0%, #0062cc 100%);
+    box-shadow: 0 0 15px #4facfe;
+    margin: 30px auto;
+    transition: all 0.4s ease;
+    
+    /* Estado ocioso (desligada/silêncio) */
+    opacity: 0.2; 
+    transform: scale(0.8);
+}
+
+/* O que acontece quando a IA começa a falar */
+.esfera-ia.falando {
+    opacity: 1;
+    animation: pulsar-esfera 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes pulsar-esfera {
+    0% { 
+        transform: scale(0.95); 
+        box-shadow: 0 0 20px #4facfe, 0 0 30px #0062cc; 
+    }
+    100% { 
+        transform: scale(1.15); 
+        box-shadow: 0 0 40px #4facfe, 0 0 80px #0062cc; 
+    }
+}

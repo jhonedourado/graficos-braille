@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const fonte = document.getElementById('fonte-audio');
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
+    const esferaIA = document.getElementById('esfera-ia')
     
     // Variáveis de escopo da página
     let audioAssistente = null;
@@ -54,9 +55,18 @@ window.addEventListener('DOMContentLoaded', () => {
         const urlAudioFinal = `${urlAudioBase}/${caminhoLimpo}`;
         console.log("Tentando reproduzir áudio em:", urlAudioFinal);
 
-        // CORREÇÃO: Sem o 'const' aqui! Usa a variável declarada lá em cima.
+        // 1. Instancia o áudio
         audioAssistente = new Audio(urlAudioFinal);
-        audioAssistente.play().catch(error => {
+
+        //2. Quando o áudio acabar de falar sozinho, a esfera desliga
+        audioAssistente.onended = () => {
+            if (esferaIA) esferaIA.classList.remove('falando');
+        };
+
+        // 3. Toca o áudio e liga a esfera
+        audioAssistente.play().then(() => {
+            if (esferaIA) esferaIA.classList.add('falando');
+        }).catch(error => {
             console.error("Erro ao reproduzir áudio:", error);
         });
     };
@@ -87,7 +97,7 @@ window.addEventListener('DOMContentLoaded', () => {
     btnGravacao.addEventListener('click', async () => {
         // Tira o foco do botão para a barra de espaço não acioná-lo acidentalmente
         btnGravacao.blur();
-        
+
         // 1. SE JÁ ESTIVER GRAVANDO: O clique serve para PARAR
         if (isRecording) {
             isRecording = false;
