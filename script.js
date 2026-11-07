@@ -129,6 +129,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // Silencia a IA imediatamente se ela estiver falando
         if (audioAssistente && !audioAssistente.paused) {
             audioAssistente.pause();
+            if (esferaIA) esferaIA.classList.remove('falando');
         }
 
         try {
@@ -174,8 +175,11 @@ window.addEventListener('DOMContentLoaded', () => {
         if (audioAssistente) {
             if (audioAssistente.paused) {
                 audioAssistente.play();
+                if (esferaIA) esferaIA.classList.add('falando');
+
             } else {
                 audioAssistente.pause();
+                if (esferaIA) esferaIA.classList.remove('falando');
             }
         }
     });
@@ -189,8 +193,10 @@ window.addEventListener('DOMContentLoaded', () => {
             if (audioAssistente) {
                 if (audioAssistente.paused) {
                     audioAssistente.play();
+                    if (esferaIA) esferaIA.classList.add('falando');
                 } else {
                     audioAssistente.pause();
+                    if (esferaIA) esferaIA.classList.remove('falando');
                 }
             }
         }

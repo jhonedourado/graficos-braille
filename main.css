@@ -86,13 +86,13 @@ audio {
 }
 
 .esfera-ia {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     /* Gradiente com cores parecidas com a da sua referência */
     background: radial-gradient(circle, #4facfe 0%, #0062cc 100%);
     box-shadow: 0 0 15px #4facfe;
-    margin: 30px auto;
+    margin: 15px auto;
     transition: all 0.4s ease;
     
     /* Estado ocioso (desligada/silêncio) */
