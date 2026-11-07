@@ -85,6 +85,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // LÓGICA DE GRAVAÇÃO (Centralizada diretamente no botão)
     btnGravacao.addEventListener('click', async () => {
+        // Tira o foco do botão para a barra de espaço não acioná-lo acidentalmente
+        btnGravacao.blur();
+        
         // 1. SE JÁ ESTIVER GRAVANDO: O clique serve para PARAR
         if (isRecording) {
             isRecording = false;
