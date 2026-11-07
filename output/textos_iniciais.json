@@ -1,0 +1,3 @@
+{
+  "assintotas": "Gráfico das Assíntotas. O gráfico possui três texturas diferentes. A primeira consiste em linhas largas e lisas, que representam os eixos x e y, localizados horizontal e verticalmente, respectivamente. A segunda consiste em linhas tracejadas, finas e aspecto macio, que representam as assíntotas vertical e horizontal. A terceira é constituída por linhas finas e ásperas e dizem respeito a forma da função f de x igual x mais 1 sobre x menos 1. Para esta função, a assíntota horizontal se localiza em y igual a 1, pois o limite de f de x quando x tende a infinito pela direita ou pela esquerda é 1. A assíntota vertical se localiza em x igual a 1, pois o limite da função com x tendendo a 1 pela direita ou esquerda é mais ou menos infinito, respectivamente."
+}

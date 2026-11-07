@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const fonte = document.getElementById('fonte-audio');
     const btnGravacao = document.getElementById('btn-gravacao');
     const statusGravacao = document.getElementById('status-gravacao');
-    const esferaIA = document.getElementById('esfera-ia')
+    const esferaIA = document.getElementById('esfera-ia'); // A nossa esfera visual
     
     // Variáveis de escopo da página
     let audioAssistente = null;
@@ -52,18 +52,23 @@ window.addEventListener('DOMContentLoaded', () => {
             audioAssistente.currentTime = 0;
         }
 
+        // Se o áudio descritivo original do HTML estiver tocando, pausa ele também
+        if (audio && !audio.paused) {
+            audio.pause();
+        }
+
         const urlAudioFinal = `${urlAudioBase}/${caminhoLimpo}`;
         console.log("Tentando reproduzir áudio em:", urlAudioFinal);
 
-        // 1. Instancia o áudio
+        // Cria o áudio da IA
         audioAssistente = new Audio(urlAudioFinal);
-
-        //2. Quando o áudio acabar de falar sozinho, a esfera desliga
+        
+        // Desliga a esfera quando a fala da IA acabar
         audioAssistente.onended = () => {
             if (esferaIA) esferaIA.classList.remove('falando');
         };
 
-        // 3. Toca o áudio e liga a esfera
+        // Toca o áudio da IA e liga a esfera
         audioAssistente.play().then(() => {
             if (esferaIA) esferaIA.classList.add('falando');
         }).catch(error => {
@@ -79,83 +84,94 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log("Conexão WebSocket encerrada.");
     };
 
-    // Pega o ID na URL para o áudio descritivo do ambiente
+    // ---------------------------------------------------------
+    // LÓGICA DO ÁUDIO DESCRITIVO INICIAL
+    // ---------------------------------------------------------
     const id = topic;
 
     if (!id) {
         tituloPagina.textContent = "Tutor de Cálculo - IA";
         statusAudio.textContent = "Conectado ao assistente de voz.";
     } else {
-        // Formata o título com base no ID (ex: 'assintotas' vira 'Assíntotas')
+        // Formata a primeira letra para maiúscula (ex: 'assintotas' vira 'Assintotas')
         const tituloFormatado = id.charAt(0).toUpperCase() + id.slice(1);
+        
         tituloPagina.textContent = tituloFormatado;
-        document.title = `Tutor de Cálculo - ${tituloFormatado}`;
-        statusAudio.textContent = "Áudio descritivo pronto. Faça sua pergunta à IA abaixo.";
+        document.title = `Guia em Áudio - ${tituloFormatado}`;
+
+        // Aponta direto para o arquivo de áudio usando o ID da URL
+        const linkAudio = `./audio/${id}.mpeg`;
+        fonte.src = linkAudio;
+        audio.load();
+
+        // Tenta rodar o áudio automaticamente
+        audio.play().then(() => {
+            statusAudio.textContent = "Áudio iniciado automaticamente. Faça sua pergunta à IA abaixo.";
+        }).catch(error => {
+            // Se o navegador bloquear o autoplay, pede para o usuário tocar na tela
+            statusAudio.textContent = "Toque em qualquer lugar da tela para iniciar a audiodescrição.";
+            criarCamadaToqueTelaInteira(audio, statusAudio);
+        });
     }
 
-    // LÓGICA DE GRAVAÇÃO (Centralizada diretamente no botão)
+    // ---------------------------------------------------------
+    // LÓGICA DE GRAVAÇÃO
+    // ---------------------------------------------------------
     btnGravacao.addEventListener('click', async () => {
-        // Tira o foco do botão para a barra de espaço não acioná-lo acidentalmente
-        btnGravacao.blur();
+        btnGravacao.blur(); // Tira o foco do botão para não dar conflito com a barra de espaço
 
         // 1. SE JÁ ESTIVER GRAVANDO: O clique serve para PARAR
         if (isRecording) {
             isRecording = false;
             
-            // Reseta o visual do botão para o estado original
             btnGravacao.textContent = "Gravar Pergunta";
-            btnGravacao.style.backgroundColor = ""; // Volta à cor padrão
+            btnGravacao.style.backgroundColor = ""; 
             btnGravacao.classList.remove('gravando');
             
             if (statusGravacao) statusGravacao.textContent = "Processando áudio...";
 
-            // Manda o gravador parar (isso dispara o evento onstop abaixo)
             if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 mediaRecorder.stop();
             }
-            return; // Sai da função para não iniciar uma nova gravação
+            return; 
         }
 
         // 2. SE NÃO ESTIVER GRAVANDO: O clique serve para INICIAR
         isRecording = true;
         
-        // Altera o visual do botão para o usuário saber que está gravando
         btnGravacao.textContent = "Parar Gravação";
-        btnGravacao.style.backgroundColor = "#d32f2f"; // Fica vermelho
+        btnGravacao.style.backgroundColor = "#d32f2f"; 
         btnGravacao.classList.add('gravando');
         
         if (statusGravacao) statusGravacao.textContent = "Gravando... Clique novamente para enviar.";
 
-        // Silencia a IA imediatamente se ela estiver falando
+        // Silencia a IA imediatamente se ela estiver falando e desliga a esfera
         if (audioAssistente && !audioAssistente.paused) {
             audioAssistente.pause();
             if (esferaIA) esferaIA.classList.remove('falando');
         }
 
+        // Silencia o áudio descritivo original também (caso esteja tocando a introdução)
+        if (audio && !audio.paused) {
+            audio.pause();
+        }
+
         try {
-            // Pede permissão e liga o microfone
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             audioChunks = [];
 
-            // Vai guardando os pedaços do áudio
             mediaRecorder.ondataavailable = (event) => {
                 audioChunks.push(event.data);
             };
 
-            // Quando o mediaRecorder.stop() for chamado (lá no passo 1), ele monta o arquivo e envia
             mediaRecorder.onstop = () => {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 console.log("Áudio pronto para envio:", audioBlob);
-                
-                // Envia para o seu back-end
                 enviarParaBackend(audioBlob); 
-                
-                // Desliga a "luz vermelha" do microfone na aba do navegador
                 stream.getTracks().forEach(track => track.stop());
             };
 
-            // Começa a gravar de fato
             mediaRecorder.start();
 
         } catch (erro) {
@@ -167,16 +183,18 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Lógica do Pause e Reprodução de Áudio ao clicar na tela
+    // ---------------------------------------------------------
+    // CONTROLES DE REPRODUÇÃO (PAUSE/PLAY DA IA)
+    // ---------------------------------------------------------
+    
+    // Clicando na tela
     document.addEventListener('click', (event) => {
-        // Se o usuário clicar no botão de gravar, ignora para não dar conflito
-        if (event.target.id === 'btn-gravacao') return;
+        if (event.target.id === 'btn-gravacao') return; // Ignora se o clique for no botão
 
         if (audioAssistente) {
             if (audioAssistente.paused) {
                 audioAssistente.play();
                 if (esferaIA) esferaIA.classList.add('falando');
-
             } else {
                 audioAssistente.pause();
                 if (esferaIA) esferaIA.classList.remove('falando');
@@ -184,11 +202,10 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Lógica do Pause e Reprodução de Áudio pela barra de espaço
+    // Pela barra de espaço
     document.addEventListener('keydown', (event) => {
-        // CORREÇÃO: check de id do botão e do audioAssistente
-        if (event.code === 'Space' && event.target.id !== 'btn-gravacao'){
-            event.preventDefault(); // Evita a tela rolar para baixo
+        if (event.code === 'Space') {
+            event.preventDefault(); // Evita rolar a página
 
             if (audioAssistente) {
                 if (audioAssistente.paused) {
@@ -203,7 +220,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Camada extra de acessibilidade para ambiente
+// Camada extra de acessibilidade para ambiente (quando o autoplay é bloqueado)
 function criarCamadaToqueTelaInteira(audio, statusAudio) {
     const telaInterativa = document.createElement('div');
     telaInterativa.style.position = 'fixed';
