@@ -15,31 +15,31 @@
 <body>
 
 <div class="container">
-    <section class="audio-container">
-        <h1 class="titulo-audio" id="titulo-pagina">Carregando...</h1>
-        <p class="status" id="status-audio">Buscando informações do ambiente...</p>
+    <section class="audio-container" id="audio-container">
+        <h1 id="titulo-pagina">Carregando...</h1>
+        <p id="status-audio">Buscando informações do ambiente...</p>
     
         <audio id="audio" controls>
             <source id="fonte-audio" src="" type="audio/mpeg">
             Seu navegador não suporta a reprodução de áudio.
         </audio>
-
-        <!-- Para teste no ambiente de desenvolvimento -->
-        <!-- <a href="index.html?id=assintotas">Mudar URL</a> -->
     </section>
 
     <section class="chat-container" aria-label="Assistente de Dúvidas sobre o Gráfico">
-        <h2 class="titulo-agente">Tirar dúvidas por áudio</h2>
-        <p class="descricao-agente">Clique no botão abaixo e tire dúvidas com o nosso agente de IA sobre este gráfico.</p>
+        <h2 class="titulo-agente" id="titulo-agente">Tirar dúvidas por áudio</h2>
+        <p class="descricao-agente" id="descricao-agente">Clique no botão abaixo e tire dúvidas com o nosso agente de IA sobre este gráfico.</p>
 
-        <div id="esfera-ia" class="esfera-ia"></div>
+        <div id="esfera-ia"></div>
 
         <div class="chat-controles">
-            <button id="btn-gravacao" class="btn-audio" aria-label="Gravar pergunta em áudio">
+            <button class="btn-gravacao" id="btn-gravacao" aria-label="Gravar pergunta em áudio">
                 Gravar pergunta
             </button>
+            <button class="btn-pause" id="btn-pause" aria-label="Pausar fala do assistente">
+                Pausar fala
+            </button>
             <!-- Região que lê o estado da gravação para o leitor de tela sem interromper o usuário -->
-            <span id="status-gravacao" class="leitor" aria-live="assertive"></span>
+            <span id="status-gravacao" aria-live="assertive"></span>
         </div>
     </section>
 </div>

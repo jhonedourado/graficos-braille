@@ -11,13 +11,17 @@ const urlAudioBase = "https://graficos-braille.onrender.com";
 let ws;
 
 window.addEventListener('DOMContentLoaded', () => {
+    const audioContainer = document.getElementById('audio-container');
     const tituloPagina = document.getElementById('titulo-pagina');
     const statusAudio = document.getElementById('status-audio');
     const audio = document.getElementById('audio');
     const fonte = document.getElementById('fonte-audio');
+    const tituloAgente = document.getElementById('titulo-agente')
+    const descricaoAgente = document.getElementById('descricao-agente')
+    const esferaIA = document.getElementById('esfera-ia');
     const btnGravacao = document.getElementById('btn-gravacao');
+    const btnPause = document.getElementById('btn-pause');
     const statusGravacao = document.getElementById('status-gravacao');
-    const esferaIA = document.getElementById('esfera-ia'); // A nossa esfera visual
     
     // Variáveis de escopo da página
     let audioAssistente = null;
@@ -90,8 +94,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const id = topic;
 
     if (!id) {
-        tituloPagina.textContent = "Tutor de Cálculo - IA";
-        statusAudio.textContent = "Conectado ao assistente de voz.";
+        audioContainer.classList.add('remove')
+        tituloAgente.textContent = "Tutor de Cálculo - IA";
+        descricaoAgente.textContent = "Conectado ao assistente de voz.";
     } else {
         // Formata a primeira letra para maiúscula (ex: 'assintotas' vira 'Assintotas')
         const tituloFormatado = id.charAt(0).toUpperCase() + id.slice(1);
@@ -117,6 +122,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
     // LÓGICA DE GRAVAÇÃO
     // ---------------------------------------------------------
+    if (!isRecording) {
+        btnPause.classList.add('remove');
+    }
     btnGravacao.addEventListener('click', async () => {
         btnGravacao.blur(); // Tira o foco do botão para não dar conflito com a barra de espaço
 
@@ -124,8 +132,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (isRecording) {
             isRecording = false;
             
+            btnPause.classList.add('remove');
+            
             btnGravacao.textContent = "Gravar Pergunta";
-            btnGravacao.style.backgroundColor = ""; 
+            // btnGravacao.style.backgroundColor = ""; 
             btnGravacao.classList.remove('gravando');
             
             if (statusGravacao) statusGravacao.textContent = "Processando áudio...";
@@ -138,9 +148,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // 2. SE NÃO ESTIVER GRAVANDO: O clique serve para INICIAR
         isRecording = true;
+
+        btnPause.classList.remove('remove');
         
         btnGravacao.textContent = "Parar Gravação";
-        btnGravacao.style.backgroundColor = "#d32f2f"; 
+        // btnGravacao.style.backgroundColor = "#d32f2f"; 
         btnGravacao.classList.add('gravando');
         
         if (statusGravacao) statusGravacao.textContent = "Gravando... Clique novamente para enviar.";
@@ -188,8 +200,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
     
     // Clicando na tela
-    document.addEventListener('click', (event) => {
-        if (event.target.id === 'btn-gravacao') return; // Ignora se o clique for no botão
+    // document.addEventListener('click', (event) => {
+    btnGravacao.addEventListener('click', async () => {
+        // if (event.target.id === 'btn-gravacao') return; // Ignora se o clique for no botão
 
         if (audioAssistente) {
             if (audioAssistente.paused) {

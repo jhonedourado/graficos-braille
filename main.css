@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     background-color: var(--cor-fundo);
     font-family: "Roboto", sans-serif;
@@ -20,8 +20,12 @@ body {
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
     width: 90%;
-    max-width: 450px;
+    max-width: 480px;
     margin: 0 10%;
     color: var(--cor-fonte);
 }
@@ -32,22 +36,21 @@ body {
     border-radius: 16px;
 }
 
-.titulo-audio {
+#titulo-pagina {
     margin: 0 0 8px 0;
     font-size: var(--fonte-h1);
 }
 
-.status {
+#status-audio {
     margin: 0 0 32px 0;
     font-size: var(--fonte-p);
 }
 
-audio {
+#audio {
     width: 100%;
 }
 
 .chat-container {
-    margin-top: 32px;
     padding: 32px;
     background-color: var(--cor-container);
     border-radius: 16px;
@@ -63,12 +66,10 @@ audio {
     font-size: var(--fonte-p);
 }
 
-.btn-audio {
+.btn-gravacao, .btn-pause {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 18px;
     color: var(--cor-fonte);
-    background-color: #1a589b;
-    border: none;
     border-radius: 8px;
     font-size: var(--fonte-btn);
     font-weight: bold;
@@ -76,31 +77,47 @@ audio {
     transition: background-color 0.2s, transform 0.1s;
 }
 
-.btn-audio:hover, .btn-audio:focus {
+.btn-gravacao {
+    background-color: #1a589b;
+    border: none;
+}
+
+.btn-pause {
+    margin-top: 16px;
+    background-color: transparent;
+    border: solid 2px #1a589b;
+}
+
+.btn-gravacao:hover, .btn-gravacao:focus {
     background-color: #003d82;
 }
 
-.btn-audio.gravando {
+.btn-pause:hover, .btn-pause:focus {
+    border-color: #003d82;
+}
+
+.btn-gravacao.gravando {
     background-color: #820000;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-pause.pausado {
+    border-color: #820000;
     transition: background-color 0.2s, transform 0.1s;
 }
 
 .esfera-ia {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
-    /* Gradiente com cores parecidas com a da sua referência */
-    background: radial-gradient(circle, #4facfe 0%, #0062cc 100%);
-    box-shadow: 0 0 15px #4facfe;
     margin: 15px auto;
+    background: radial-gradient(circle, #4facfe 0%, #0062cc 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 15px #4facfe;
     transition: all 0.4s ease;
-    
-    /* Estado ocioso (desligada/silêncio) */
     opacity: 0.2; 
     transform: scale(0.8);
 }
 
-/* O que acontece quando a IA começa a falar */
 .esfera-ia.falando {
     opacity: 1;
     animation: pulsar-esfera 1.2s infinite alternate ease-in-out;
@@ -114,5 +131,22 @@ audio {
     100% { 
         transform: scale(1.15); 
         box-shadow: 0 0 40px #4facfe, 0 0 80px #0062cc; 
+    }
+}
+
+.remove {
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: start;
+        max-width: 880px;
     }
 }
