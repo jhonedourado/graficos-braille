@@ -95,8 +95,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (!id) {
         audioContainer.style.display = "none";
-        tituloAgente.textContent = "Tutor de Cálculo - IA";
-        descricaoAgente.textContent = "Conectado ao assistente de voz.";
+        tituloAgente.textContent = "Chat Geral";
+        descricaoAgente.textContent = 'Clique no botão "Gravar pergunta" e tire dúvidas com o nosso agente de IA sobre assustos da disciplina de Cálculo 1.';
     } else {
         // Formata a primeira letra para maiúscula (ex: 'assintotas' vira 'Assintotas')
         const tituloFormatado = id.charAt(0).toUpperCase() + id.slice(1);
