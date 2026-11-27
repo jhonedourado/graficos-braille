@@ -86,6 +86,7 @@ body {
 
 .btn-pause {
     margin-top: 16px;
+    color: var(--cor-btn);
     background-color: transparent;
     border: solid 2px var(--cor-btn);
 }
@@ -104,6 +105,7 @@ body {
 }
 
 .btn-pause.pausado {
+    color: #820000;
     border-color: #820000;
     transition: 0.2s;
 }
