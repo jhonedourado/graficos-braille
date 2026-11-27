@@ -134,8 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
             
             btnPause.style.display = "none";
             
-            btnGravacao.textContent = "Gravar Pergunta";
-            // btnGravacao.style.backgroundColor = ""; 
+            btnGravacao.textContent = "Gravar pergunta"; 
             btnGravacao.classList.remove('gravando');
             
             if (statusGravacao) statusGravacao.textContent = "Processando áudio...";
@@ -148,12 +147,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // 2. SE NÃO ESTIVER GRAVANDO: O clique serve para INICIAR
         isRecording = true;
+        
+        btnGravacao.textContent = "Parar gravação"; 
+        btnGravacao.classList.add('gravando');
 
         btnPause.style.display = "block";
-        
-        btnGravacao.textContent = "Parar Gravação";
-        // btnGravacao.style.backgroundColor = "#d32f2f"; 
-        btnGravacao.classList.add('gravando');
         
         if (statusGravacao) statusGravacao.textContent = "Gravando... Clique novamente para enviar.";
 
@@ -189,7 +187,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } catch (erro) {
             console.error("Erro ao acessar o microfone:", erro);
             isRecording = false;
-            btnGravacao.textContent = "Gravar Pergunta";
+            btnGravacao.textContent = "Gravar pergunta";
             btnGravacao.classList.remove('gravando');
             if (statusGravacao) statusGravacao.textContent = "Erro no microfone. Tente novamente.";
         }
