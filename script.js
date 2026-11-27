@@ -94,7 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const id = topic;
 
     if (!id) {
-        audioContainer.classList.add('remove')
+        audioContainer.style.display = "none";
         tituloAgente.textContent = "Tutor de Cálculo - IA";
         descricaoAgente.textContent = "Conectado ao assistente de voz.";
     } else {
@@ -123,7 +123,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // LÓGICA DE GRAVAÇÃO
     // ---------------------------------------------------------
     if (!isRecording) {
-        btnPause.classList.add('remove');
+        btnPause.style.display = "none";
     }
     btnGravacao.addEventListener('click', async () => {
         btnGravacao.blur(); // Tira o foco do botão para não dar conflito com a barra de espaço
@@ -132,7 +132,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (isRecording) {
             isRecording = false;
             
-            btnPause.classList.add('remove');
+            btnPause.style.display = "none";
             
             btnGravacao.textContent = "Gravar Pergunta";
             // btnGravacao.style.backgroundColor = ""; 
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // 2. SE NÃO ESTIVER GRAVANDO: O clique serve para INICIAR
         isRecording = true;
 
-        btnPause.classList.remove('remove');
+        btnPause.style.display = "block";
         
         btnGravacao.textContent = "Parar Gravação";
         // btnGravacao.style.backgroundColor = "#d32f2f"; 
